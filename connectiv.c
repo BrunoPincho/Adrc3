@@ -43,7 +43,7 @@ for(i=0;i<V;i++){
 				if(j<V && x==0){
 					if(discover[L[j]]==0 && x==0){
 						//discover[L[j]]=1;
-						if(capacidade[L[j]] +1 >capacidade[nodobase] && nodobase!=origem && L[j]!=destino && flow[L[j]][nodobase]<1){
+						if((capacidade[nodobase] +1) < (capacidade[L[j]] +1) && capacidade[L[j]] +1 >capacidade[nodobase] && nodobase!=origem && L[j]!=destino && flow[L[j]][nodobase]<1){
 							
 								parent[nodobase] = L[j];
 								capacidade[nodobase] = 1 + capacidade[L[j]];
@@ -56,24 +56,26 @@ for(i=0;i<V;i++){
 
 				if(j==V-1 && x==0){
 						x=1;
-						j=0;
+						j=-1;
 				}
 				//comparar matrix[origem][L[j]];
 		}
 		
-		z++;
+		//z++;
 		x=0;
 		discover[nodobase]=1;
-		if(L[z]!=nodobase){
+		while(L[z]==nodobase || discover[L[z]]==1 ){
+			z++;
+		}
+		nodobase = L[z];
+		/*if(L[z]!=nodobase){
 			nodobase = L[z];
 		}else{
 			z++;
 			nodobase = L[z];
-		}
+		}*/
 	}
-
 	return parent[destino];
-
 }
 
 
@@ -121,7 +123,7 @@ int main(){
 		}
 
 	
-		Ford_Fulkerson(1,6);
+		Ford_Fulkerson(2,6);
 
 
 
