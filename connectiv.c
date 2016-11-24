@@ -42,8 +42,8 @@ for(i=0;i<V;i++){
 					
 				if(j<V && x==0){
 					if(discover[L[j]]==0 && x==0){
-						//discover[L[j]]=1;
-						if((capacidade[nodobase] +1) < (capacidade[L[j]] +1) && capacidade[L[j]] +1 >capacidade[nodobase] && nodobase!=origem && L[j]!=destino && flow[L[j]][nodobase]<1){
+						//discover[L[j]]=1; (capacidade[nodobase] +1) < (capacidade[L[j]] +1) &&
+						if( capacidade[nodobase]!=capacidade[L[j]] && capacidade[L[j]] +1 >capacidade[nodobase] && nodobase!=origem && L[j]!=destino && flow[L[j]][nodobase]<1){
 							
 								parent[nodobase] = L[j];
 								capacidade[nodobase] = 1 + capacidade[L[j]];
@@ -77,6 +77,63 @@ for(i=0;i<V;i++){
 	}
 	return parent[destino];
 }
+
+int maxcap=0;
+int seen[100]={0};
+int original;
+char pathstring[1024]="\0";
+
+int DFS(int origem,int destino){
+
+	int j,i;
+	int x=0;
+	int circula;
+	//pathstring leva reset
+	if(origem == destino){
+		if(capacidade[destino]>maxcap){
+			maxcap=capacidade[destino];
+			//actualiza o melhor caminho
+			circula = destino;
+			while(circula != original){
+				pathstring[x]=circula;
+				circula = parent[circula];
+				x++;
+			}
+				pathstring[x]=circula;
+			//
+			
+			for(i=0;i<V;i++)
+				seen[L[i]]=0;
+
+			return 0;
+		}else{
+
+			for(i=0;i<V;i++)
+				seen[L[i]]=0;
+			return 0;
+		}
+
+
+	}
+
+	for(j=0;j<V;j++){
+		if(matrix[origem][L[j]]>0 && origem!=L[j] && L[j]!=original && L[j]!=parent[origem] && seen[L[j]]<1){
+			parent[L[j]] = origem;
+			capacidade[L[j]] = capacidade[origem] + 1;
+			seen[origem]=1;
+			DFS(L[j],destino);
+		}
+
+	}
+	return pathstring[0]; 
+
+
+
+}
+
+
+
+
 
 
 void  Ford_Fulkerson(int origem,int destino){
@@ -122,7 +179,8 @@ int main(){
 				number_edges++;				
 		}
 
-	
+		original =2;
+		DFS(2,6);
 		Ford_Fulkerson(2,6);
 
 
