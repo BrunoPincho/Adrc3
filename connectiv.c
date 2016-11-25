@@ -118,7 +118,7 @@ int DFS(int origem,int destino){
 	}
 
 	for(j=0;j<V;j++){
-		if(matrix[origem][L[j]]>0 && origem!=L[j] && L[j]!=original && L[j]!=parent[origem] && seen[L[j]]<1 && flow[origem][L[j]]<1){
+		if((capacidade[origem] + 1)>capacidade[L[j]] && matrix[origem][L[j]]>0 && origem!=L[j] && L[j]!=original && L[j]!=parent[origem] && seen[L[j]]<1 && flow[origem][L[j]]<1){
 			parent[L[j]] = origem;
 			capacidade[L[j]] = capacidade[origem] + 1;
 			seen[origem]=1;
@@ -132,12 +132,21 @@ int DFS(int origem,int destino){
 
 }
 
+void reset_flowscap(){
+int i;
+
+	for(i=0;i<V;i++){
+		capacidade[L[i]]=1;
+	}
+
+}
 
 void  Ford_FulkersonDfs(int origem,int destino){
 int circula=0;
 int maxflow=0;
 int navigate=0;
 int i=0;
+original =origem;
 
 	while(DFS(origem,destino)){
 		navigate=0;
@@ -159,6 +168,7 @@ int i=0;
 			pathstring[i]='\0';
 			i++;
 		}
+		reset_flowscap();
 		maxcap=0;
 	}
 
@@ -210,7 +220,7 @@ int main(){
 				number_edges++;				
 		}
 
-		original =2;
+		
 		//DFS(2,6);
 		Ford_FulkersonDfs(2,6);
 
