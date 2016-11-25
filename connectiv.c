@@ -10,6 +10,7 @@ int capacidade[100]={1};
 int flow[100][100];
 
 
+
 int BFS(int origem,int destino){
 
 int i,j;
@@ -82,6 +83,7 @@ int maxcap=0;
 int seen[100]={0};
 int original;
 char pathstring[1024]="\n";
+int unreachable[100]={0};
 
 int DFS(int origem,int destino){
 	int j,i;
@@ -90,6 +92,7 @@ int DFS(int origem,int destino){
 	//pathstring leva reset
 	if(origem == destino){
 		if(capacidade[destino]>maxcap){
+
 			maxcap=capacidade[destino];
 			//actualiza o melhor caminho
 			circula = destino;
@@ -122,7 +125,11 @@ int DFS(int origem,int destino){
 			parent[L[j]] = origem;
 			capacidade[L[j]] = capacidade[origem] + 1;
 			seen[origem]=1;
+			unreachable[L[j]]=0;
 			DFS(L[j],destino);
+		}
+		if(matrix[origem][L[j]]>0 && origem!=L[j] && flow[origem][L[j]]>0 && L[j]!=original && L[j]!=parent[origem] && seen[L[j]]<1){
+			unreachable[L[j]]=1;
 		}
 
 	}
@@ -141,6 +148,27 @@ int i;
 
 }
 
+void imprimeArestas(int maxflow){
+int i,j;
+int flowcount=0;
+	printf("Um conjunto de arestas que disconectam o grafo sao por exemplo:\n");
+	for(i=0;i<V;i++){
+		for(j=0;j<V;j++){
+			if(unreachable[i]==1){
+				if(matrix[L[i]][L[j]]>0){
+					printf("%d - %d\n",L[i],L[j]);
+					flowcount++;
+				}
+				if(flowcount == maxflow)
+					return;
+			}
+		}
+	}
+
+
+}
+
+
 void  Ford_FulkersonDfs(int origem,int destino){
 int circula=0;
 int maxflow=0;
@@ -155,6 +183,7 @@ original =origem;
 		circula = destino;
 		while(pathstring[navigate+1]!='-'){
 			if(matrix[pathstring[navigate]][pathstring[navigate+1]] >0){
+				
 				if(flow[pathstring[navigate+1]][pathstring[navigate]]==0)
 					flow[pathstring[navigate+1]][pathstring[navigate]]++;
 
@@ -171,6 +200,8 @@ original =origem;
 		reset_flowscap();
 		maxcap=0;
 	}
+
+	imprimeArestas(maxflow);
 
 }
 
