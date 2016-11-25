@@ -81,10 +81,9 @@ for(i=0;i<V;i++){
 int maxcap=0;
 int seen[100]={0};
 int original;
-char pathstring[1024]="\0";
+char pathstring[1024]="\n";
 
 int DFS(int origem,int destino){
-
 	int j,i;
 	int x=0;
 	int circula;
@@ -100,6 +99,8 @@ int DFS(int origem,int destino){
 				x++;
 			}
 				pathstring[x]=circula;
+				pathstring[x+1]='-';
+
 			//
 			
 			for(i=0;i<V;i++)
@@ -117,7 +118,7 @@ int DFS(int origem,int destino){
 	}
 
 	for(j=0;j<V;j++){
-		if(matrix[origem][L[j]]>0 && origem!=L[j] && L[j]!=original && L[j]!=parent[origem] && seen[L[j]]<1){
+		if(matrix[origem][L[j]]>0 && origem!=L[j] && L[j]!=original && L[j]!=parent[origem] && seen[L[j]]<1 && flow[origem][L[j]]<1){
 			parent[L[j]] = origem;
 			capacidade[L[j]] = capacidade[origem] + 1;
 			seen[origem]=1;
@@ -132,6 +133,36 @@ int DFS(int origem,int destino){
 }
 
 
+void  Ford_FulkersonDfs(int origem,int destino){
+int circula=0;
+int maxflow=0;
+int navigate=0;
+int i=0;
+
+	while(DFS(origem,destino)){
+		navigate=0;
+		maxflow++;
+		i=0;
+		circula = destino;
+		while(pathstring[navigate+1]!='-'){
+			if(matrix[pathstring[navigate]][pathstring[navigate+1]] >0){
+				if(flow[pathstring[navigate+1]][pathstring[navigate]]==0)
+					flow[pathstring[navigate+1]][pathstring[navigate]]++;
+
+				if(matrix[pathstring[navigate+1]][pathstring[navigate]] >0)
+						flow[pathstring[navigate]][pathstring[navigate+1]] = -flow[pathstring[navigate+1]][pathstring[navigate]];
+				}
+			navigate++;
+		}
+		
+		while(pathstring[i]!='\0'){
+			pathstring[i]='\0';
+			i++;
+		}
+		maxcap=0;
+	}
+
+}
 
 
 
@@ -180,8 +211,8 @@ int main(){
 		}
 
 		original =2;
-		DFS(2,6);
-		Ford_Fulkerson(2,6);
+		//DFS(2,6);
+		Ford_FulkersonDfs(2,6);
 
 
 
