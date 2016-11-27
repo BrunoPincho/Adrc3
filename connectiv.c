@@ -96,7 +96,10 @@ int DFS(int origem,int destino){
 			maxcap=capacidade[destino];
 			//actualiza o melhor caminho
 			circula = destino;
-			while(circula != original){
+			while(1){
+				if(circula == original)
+					break; 
+
 				pathstring[x]=circula;
 				circula = parent[circula];
 				x++;
@@ -105,23 +108,26 @@ int DFS(int origem,int destino){
 				pathstring[x+1]='-';
 
 			//
-			
-			for(i=0;i<V;i++)
+			seen[origem]=0;
+			/*for(i=0;i<V;i++)
 				seen[L[i]]=0;
-
+				*/
 			return 0;
 		}else{
-
-			for(i=0;i<V;i++)
+			seen[origem]=0;
+		/*	for(i=0;i<V;i++)
 				seen[L[i]]=0;
+		*/
 			return 0;
 		}
 
 
 	}
 
+	//(capacidade[origem] + 1)>capacidade[L[j]] && 
+
 	for(j=0;j<V;j++){
-		if((capacidade[origem] + 1)>capacidade[L[j]] && matrix[origem][L[j]]>0 && origem!=L[j] && L[j]!=original && L[j]!=parent[origem] && seen[L[j]]<1 && flow[origem][L[j]]<1){
+		if(matrix[origem][L[j]]>0 && origem!=L[j] && L[j]!=original && L[j]!=parent[origem] && seen[L[j]]<1 && flow[origem][L[j]]<1){
 			parent[L[j]] = origem;
 			capacidade[L[j]] = capacidade[origem] + 1;
 			seen[origem]=1;
@@ -133,6 +139,7 @@ int DFS(int origem,int destino){
 		}
 
 	}
+	seen[origem]=0;
 	return pathstring[0]; 
 
 
@@ -154,15 +161,17 @@ int flowcount=0;
 	printf("Um conjunto de arestas que disconectam o grafo sao por exemplo:\n");
 	for(i=0;i<V;i++){
 		for(j=0;j<V;j++){
-			if(unreachable[i]==1){
-				if(matrix[L[i]][L[j]]>0){
+			if(unreachable[L[j]]==1){
+				if(matrix[L[i]][L[j]]>0 && L[i]!=L[j]){
 					printf("%d - %d\n",L[i],L[j]);
 					flowcount++;
 				}
-				if(flowcount == maxflow)
+				if(flowcount == maxflow )
 					return;
 			}
 		}
+		//flowcount=0; && flowcount>=matrix[L[i]][L[i]]
+		
 	}
 
 
@@ -235,6 +244,8 @@ int maxflow=0;
 int main(){
 	int head;
 	int tail;
+	int i;
+	int j;
 	
 
 	FILE* fp;
@@ -242,18 +253,26 @@ int main(){
 
 		while(fscanf(fp,"%d %d",&head,&tail)!=EOF){
 				if(matrix[head][head]==0 ){
-					matrix[head][head]=1;
+					//matrix[head][head]=1;
 					L[V] = head;
 					V++;
 				}
 
 				matrix[head][tail]=1;
+				matrix[head][head]++;
 				number_edges++;				
 		}
 
-		
-		//DFS(2,6);
-		Ford_FulkersonDfs(2,6);
+		/*
+		for(i=0;i<V;i++){
+			for(j=0;j<V;j++){
+				if(L[i]!=L[j]){
+					Ford_FulkersonDfs(L[i],L[j]);
+				}
+			}
+		}*/
+
+		Ford_FulkersonDfs(1,4);
 
 
 
