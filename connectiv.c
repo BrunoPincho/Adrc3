@@ -11,73 +11,7 @@ int flow[100][100];
 
 
 
-int BFS(int origem,int destino){
 
-int i,j;
-int x=0;
-int z=0;
-
-int discover[100]={0};
-int maxcapacidade=0;
-int nodobase;
-nodobase = origem;
-for(i=0;i<V;i++){
-	parent[L[i]]=0;
-	capacidade[L[i]]=0;
-}
-
-
-	while(z<V){
-		
-			for(j=0;j<V;j++){
-
-				if(matrix[nodobase][L[j]]>0 && nodobase!=L[j]){	
-					
-					if(discover[L[j]]==0 && x==1 && L[j]!= parent[nodobase] && flow[nodobase][L[j]]<1){
-						//discover[L[j]]=1;
-						if(capacidade[nodobase] +1 >capacidade[L[j]]){
-							parent[L[j]] = nodobase;
-							capacidade[L[j]] = 1 + capacidade[nodobase];
-						}
-					}
-					
-				if(j<V && x==0){
-					if(discover[L[j]]==0 && x==0){
-						//discover[L[j]]=1; (capacidade[nodobase] +1) < (capacidade[L[j]] +1) &&
-						if( capacidade[nodobase]!=capacidade[L[j]] && capacidade[L[j]] +1 >capacidade[nodobase] && nodobase!=origem && L[j]!=destino && flow[L[j]][nodobase]<1){
-							
-								parent[nodobase] = L[j];
-								capacidade[nodobase] = 1 + capacidade[L[j]];
-								
-							}
-						}
-					}
-				
-			}
-
-				if(j==V-1 && x==0){
-						x=1;
-						j=-1;
-				}
-				//comparar matrix[origem][L[j]];
-		}
-		
-		//z++;
-		x=0;
-		discover[nodobase]=1;
-		while(L[z]==nodobase || discover[L[z]]==1 ){
-			z++;
-		}
-		nodobase = L[z];
-		/*if(L[z]!=nodobase){
-			nodobase = L[z];
-		}else{
-			z++;
-			nodobase = L[z];
-		}*/
-	}
-	return parent[destino];
-}
 
 int maxcap=0;
 int seen[100]={0};
@@ -98,7 +32,7 @@ int DFS(int origem,int destino){
 			circula = destino;
 			while(1){
 				if(circula == original)
-					break; 
+					break;
 
 				pathstring[x]=circula;
 				circula = parent[circula];
@@ -124,23 +58,25 @@ int DFS(int origem,int destino){
 
 	}
 
-	//(capacidade[origem] + 1)>capacidade[L[j]] && 
+	//(capacidade[origem] + 1)>capacidade[L[j]] &&
 
 	for(j=0;j<V;j++){
-		if(matrix[origem][L[j]]>0 && origem!=L[j] && L[j]!=original && L[j]!=parent[origem] && seen[L[j]]<1 && flow[origem][L[j]]<1){
+		if(matrix[origem][L[j]]>0 && origem!=L[j] && L[j]!=original && L[j]!=parent[origem] && seen[L[j]]<1 && (flow[origem][L[j]]<1)){
 			parent[L[j]] = origem;
 			capacidade[L[j]] = capacidade[origem] + 1;
 			seen[origem]=1;
 			unreachable[L[j]]=0;
 			DFS(L[j],destino);
 		}
-		if(matrix[origem][L[j]]>0 && origem!=L[j] && flow[origem][L[j]]>0 && L[j]!=original && L[j]!=parent[origem] && seen[L[j]]<1){
+		if(matrix[origem][L[j]]>0 && origem!=L[j] && (flow[origem][L[j]]>0) && L[j]!=original && L[j]!=parent[origem] && seen[L[j]]<1){
 			unreachable[L[j]]=1;
 		}
 
 	}
 	seen[origem]=0;
-	return pathstring[0]; 
+
+
+	return pathstring[0];
 
 
 
@@ -155,23 +91,80 @@ int i;
 
 }
 
-void imprimeArestas(int maxflow){
+
+void imprimeArestasBFS(int maxflow,int destino){
+	int i,j;
+	int flowcount=0;
+	int lvl=0;
+	int visto;
+	int descoberto[100]={0};
+	int circula=0;
+	circula = original;
+	int parente[100]={0};
+	int nivel[100]={5555555};
+	nivel[original]=0;
+	int next=101;
+	int n_v=0;
+
+
+
+	while(visto<30){
+
+		for(i=0;i<V;i++){
+			if(matrix[circula][L[i]]==1 && circula!=L[i] && descoberto[L[i]]==0 && flow[circula][L[i]]<1){
+				parente[L[i]]=circula;
+				nivel[L[i]]=nivel[circula]+1;
+				descoberto[L[i]]=1;
+			}
+
+			if(matrix[circula][L[i]]==1 && circula!=L[i] && descoberto[L[i]]==0 && flow[circula][L[i]]==1){
+				printf("\n%d - %d\n",circula,L[i]);
+				//regista aresta
+			}
+
+		}
+		lvl++;
+		j=0;
+				while(circula!=next){
+
+					if(nivel[L[j]]==lvl){
+						next=L[j];
+						circula = next;
+					}
+					j++;
+				}
+				visto++;
+
+	}
+
+
+}
+
+void imprimeArestas(int maxflow,int destino){
 int i,j;
 int flowcount=0;
 	printf("Um conjunto de arestas que disconectam o grafo sao por exemplo:\n");
 	for(i=0;i<V;i++){
-		for(j=0;j<V;j++){
-			if(unreachable[L[j]]==1){
-				if(matrix[L[i]][L[j]]>0 && L[i]!=L[j]){
-					printf("%d - %d\n",L[i],L[j]);
-					flowcount++;
-				}
-				if(flowcount == maxflow )
-					return;
+		if(unreachable[L[i]]>0){
+			for(j=0;j<V;j++){
+
+
+
+					if(matrix[L[i]][L[j]]>0 && L[i]!=L[j] && unreachable[L[j]]!=1 ) {
+						printf("%d - %d\n",L[i],L[j]);
+						flowcount++;
+
+					}
+
+
+
+					/*if(flowcount == maxflow )
+						return;*/
+
 			}
 		}
 		//flowcount=0; && flowcount>=matrix[L[i]][L[i]]
-		
+
 	}
 
 
@@ -183,6 +176,7 @@ int circula=0;
 int maxflow=0;
 int navigate=0;
 int i=0;
+int j;
 original =origem;
 
 	while(DFS(origem,destino)){
@@ -191,17 +185,18 @@ original =origem;
 		i=0;
 		circula = destino;
 		while(pathstring[navigate+1]!='-'){
-			if(matrix[pathstring[navigate]][pathstring[navigate+1]] >0){
-				
-				if(flow[pathstring[navigate+1]][pathstring[navigate]]==0)
-					flow[pathstring[navigate+1]][pathstring[navigate]]++;
 
-				if(matrix[pathstring[navigate+1]][pathstring[navigate]] >0)
+			if(matrix[pathstring[navigate]][pathstring[navigate+1]] >0){
+
+				//if(flow[pathstring[navigate+1]][pathstring[navigate]]==0)
+					flow[pathstring[navigate+1]][pathstring[navigate]]=1;
+
+				//if(matrix[pathstring[navigate+1]][pathstring[navigate]] >0)
 						flow[pathstring[navigate]][pathstring[navigate+1]] = -flow[pathstring[navigate+1]][pathstring[navigate]];
 				}
 			navigate++;
 		}
-		
+
 		while(pathstring[i]!='\0'){
 			pathstring[i]='\0';
 			i++;
@@ -210,34 +205,32 @@ original =origem;
 		maxcap=0;
 	}
 
-	imprimeArestas(maxflow);
-
-}
-
-
-
-
-void  Ford_Fulkerson(int origem,int destino){
-int circula=0;
-int maxflow=0;
-
-	while(BFS(origem,destino)>0){
-		maxflow++;
-		circula = destino;
-		while(circula!=origem){
-
-			if(matrix[circula][parent[circula]] >0 && flow[parent[circula]][circula]<1 ){
-					flow[parent[circula]][circula]++;
-
-				if(matrix[parent[circula]][circula] >0)
-						flow[circula][parent[circula]] = -flow[parent[circula]][circula];
+	int countreachbles=0;
+	for(i=0;i<V;i++){
+		for(j=0;j<V;j++){
+			if(matrix[L[i]][L[j]]>0 && unreachable[L[j]]==1 && L[i]!=L[j]){
+				countreachbles++;
 			}
-			circula = parent[circula];
-
 		}
+		if(countreachbles == matrix[L[i]][L[i]] && L[i]!=origem){
+			unreachable[L[i]]=1;
+		}else{
+			countreachbles=0;
+		}
+
 	}
 
+
+	//imprimeArestasBFS(maxflow,destino);
+
+	//imprimeArestas(maxflow,destino);
+
 }
+
+
+
+
+
 
 
 
@@ -246,7 +239,7 @@ int main(){
 	int tail;
 	int i;
 	int j;
-	
+
 
 	FILE* fp;
 	fp = fopen("grafo.txt","r");
@@ -260,7 +253,7 @@ int main(){
 
 				matrix[head][tail]=1;
 				matrix[head][head]++;
-				number_edges++;				
+				number_edges++;
 		}
 
 		/*
@@ -272,8 +265,7 @@ int main(){
 			}
 		}*/
 
-		Ford_FulkersonDfs(1,4);
-
+		Ford_FulkersonDfs(2,6);
 
 
 	fclose(fp);
